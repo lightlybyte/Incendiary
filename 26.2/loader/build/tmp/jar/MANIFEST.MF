@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Premain-Class: dev.incendiary.agent.IncendiaryAgent
+Agent-Class: dev.incendiary.agent.IncendiaryAgent
+Can-Retransform-Classes: true
+
