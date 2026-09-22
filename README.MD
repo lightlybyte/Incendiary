@@ -3,7 +3,8 @@
 ## Target
 - Minecraft 26.2+ (unobfuscated)
 - Java 25
-- Fabric Mixin fork `0.17.4+mixin.0.8.7`
+- ~~Fabric Mixin fork `0.17.4+mixin.0.8.7`~~
+- Our own ASM based injector
 
 ## Motives
 1. Zero inherited debt. No forks of existing loaders.
