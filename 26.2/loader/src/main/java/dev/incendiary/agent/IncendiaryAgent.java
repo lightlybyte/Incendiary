@@ -1,24 +1,25 @@
 package dev.incendiary.agent;
 
 import java.lang.instrument.Instrumentation;
-import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.MixinEnvironment;
-import org.spongepowered.asm.mixin.Mixins;
+import dev.incendiary.transform.HookRegistry;
+import dev.incendiary.transform.Transformer;
 
 public final class IncendiaryAgent {
 
     public static void premain(String args, Instrumentation inst) {
         System.out.println("[Incendiary] agent attached");
 
-        try {
-            MixinBootstrap.init();
-            Mixins.addConfiguration("mixins.incendiary.json");
-            MixinEnvironment.getDefaultEnvironment()
-                .setSide(MixinEnvironment.Side.CLIENT);
-            System.out.println("[Incendiary] mixin bootstrapped");
-        } catch (Throwable t) {
-            System.err.println("[Incendiary] mixin bootstrap FAILED");
-            t.printStackTrace();
-        }
+        // Register hooks BEFORE installing the transformer.
+        // Format: (owner, method name, method descriptor, callback class internal name)
+        // net.minecraft.client.Minecraft#tick()V
+        HookRegistry.register(
+            "net/minecraft/client/Minecraft",
+            "tick",
+            "()V",
+            "dev/incendiary/hooks/LifecycleHook"
+        );
+
+        inst.addTransformer(new Transformer(), false); // false = can't retransform, fine for now
+        System.out.println("[Incendiary] transformer installed");
     }
 }

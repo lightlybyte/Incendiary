@@ -10,11 +10,9 @@ java {
 
 repositories {
     mavenCentral()
-    maven("https://maven.fabricmc.net/")
 }
 
 dependencies {
-    implementation("net.fabricmc:sponge-mixin:0.17.4+mixin.0.8.7")
     implementation("org.ow2.asm:asm:9.8")
     implementation("org.ow2.asm:asm-tree:9.8")
     implementation("org.ow2.asm:asm-commons:9.8")
