@@ -13,7 +13,6 @@ public final class Event<T> {
     }
 
     public void fire(T payload) {
-        // Index loop avoids iterator allocation on the hot path.
         for (int i = 0; i < listeners.size(); i++) {
             listeners.get(i).accept(payload);
         }
