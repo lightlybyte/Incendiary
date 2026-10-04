@@ -114,7 +114,7 @@ client classes; in-game it is `CLIENT` / hooks matched).
 - Transformer silent on non-matches; per-tick file logging removed
 - Loader must be invisible in a profiler
 
-## v1 done criterion
+## Thanks
 
-A test mod loads from `imods/`, prints `[testmod] initialized on CLIENT`,
-and increments a counter every `CLIENT_TICK`.
+To everyone who has ever written a mod loader, a mod, or a tool for a game they
+loved, and then let go. Especially the ones who let go well.
