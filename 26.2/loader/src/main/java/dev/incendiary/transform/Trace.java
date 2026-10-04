@@ -6,8 +6,16 @@ import java.nio.file.StandardOpenOption;
 
 public final class Trace {
 
-    private static final Path FILE = Path.of(
-        "C:\\Users\\light\\OneDrive\\Desktop\\Incendiary\\26.2\\agent-trace.txt");
+    private static final Path FILE = resolveTracePath();
+
+    // System property override for debugging; default keeps working with no flags.
+    private static Path resolveTracePath() {
+        String override = System.getProperty("incendiary.trace");
+        if (override != null && !override.isBlank()) {
+            return Path.of(override);
+        }
+        return Path.of("C:\\Users\\light\\OneDrive\\Desktop\\Incendiary\\26.2\\agent-trace.txt");
+    }
 
     private Trace() {}
 

@@ -10,7 +10,7 @@ public final class HookRegistry {
 
     public record Target(String owner, String name, String desc) {}
 
-    public enum Kind { HEAD, RETURN_MODIFY_STRING }
+    public enum Kind { HEAD, RETURN_MODIFY_STRING, OVERWRITE_VOID }
 
     public record HookSpec(String callbackClass, String callbackMethod, String callbackDesc, Kind kind, Side side) {}
 
@@ -45,9 +45,26 @@ public final class HookRegistry {
         OWNERS.add(owner);
     }
 
+    /**
+     * Registration-only no-op hook: the injector replaces the whole ()V body with
+     * a single RETURN and never calls a callback. Used for LazyDFU-style deferral.
+     * Only void descriptors are supported.
+     */
+    public static void registerOverwriteVoid(String owner, String name, String desc, Side side) {
+        if (!desc.equals("()V")) {
+            throw new IllegalArgumentException(
+                "registerOverwriteVoid only supports ()V, got " + desc);
+        }
+        if (!Environment.shouldApply(side)) {
+            return;
+        }
+        HOOKS.computeIfAbsent(new Target(owner, name, desc), k -> new ArrayList<>())
+             .add(new HookSpec("", "", desc, Kind.OVERWRITE_VOID, side));
+        OWNERS.add(owner);
+    }
     public static void registerBoth(String owner, String name, String desc,
                                     String callbackClass) {
-        register(owner, name, desc, callbackClass, Side.BOTH);
+        registerHead(owner, name, desc, callbackClass, Side.BOTH);
     }
 
     public static boolean hasHooks(String owner) {

@@ -18,6 +18,7 @@ dependencies {
     implementation("org.ow2.asm:asm-commons:9.8")
     implementation("org.ow2.asm:asm-util:9.8")
     compileOnly("org.slf4j:slf4j-api:2.0.17")
+    compileOnly("com.google.code.gson:gson:2.14.0")
     compileOnly(files("../client_26.2.jar"))
 }
 

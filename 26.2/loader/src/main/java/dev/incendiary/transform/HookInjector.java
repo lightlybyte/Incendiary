@@ -41,6 +41,50 @@ public final class HookInjector extends ClassVisitor {
 
         if (hooks.isEmpty()) return mv;
 
+        // OVERWRITE_VOID replaces the whole body: drop code, emit single RETURN.
+        // Safe only for ()V; registration already rejected anything else.
+        for (HookSpec h : hooks) {
+            if (h.kind() == Kind.OVERWRITE_VOID) {
+                injectedCount++;
+                return new MethodVisitor(Opcodes.ASM9, mv) {
+                    // Single-entry emit: ASM calls visitCode once, so the body is
+                    // built here and everything else from the reader is dropped.
+                    @Override
+                    public void visitCode() {
+                        super.visitCode();
+                        super.visitInsn(Opcodes.RETURN);
+                        super.visitMaxs(0, 0);
+                    }
+
+                    // Drop every original instruction; visitEnd still flows through
+                    // exactly once from the reader. No visitFrame/visitLabel/visitLineNumber
+                    // overrides needed: with no labels visited, none are forwarded.
+                    @Override
+                    public void visitInsn(int opcode) {}
+                    @Override
+                    public void visitIntInsn(int opcode, int operand) {}
+                    @Override
+                    public void visitVarInsn(int opcode, int var) {}
+                    @Override
+                    public void visitTypeInsn(int opcode, String type) {}
+                    @Override
+                    public void visitFieldInsn(int opcode, String o, String n, String d) {}
+                    @Override
+                    public void visitMethodInsn(int op, String o, String n, String d, boolean itf) {}
+                    @Override
+                    public void visitJumpInsn(int opcode, org.objectweb.asm.Label label) {}
+                    @Override
+                    public void visitLdcInsn(Object value) {}
+                    @Override
+                    public void visitTableSwitchInsn(int min, int max, org.objectweb.asm.Label dflt, org.objectweb.asm.Label... labels) {}
+                    @Override
+                    public void visitLookupSwitchInsn(org.objectweb.asm.Label dflt, int[] keys, org.objectweb.asm.Label[] labels) {}
+                    @Override
+                    public void visitTryCatchBlock(org.objectweb.asm.Label s, org.objectweb.asm.Label e, org.objectweb.asm.Label h, String t) {}
+                };
+            }
+        }
+
         // Never instrument constructors with HEAD calls: inserting before the
         // super()/this() call fails verification (uninitializedThis).
         if (name.equals("<init>") || name.equals("<clinit>")) return mv;

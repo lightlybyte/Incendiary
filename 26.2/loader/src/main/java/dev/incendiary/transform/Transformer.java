@@ -12,8 +12,7 @@ public final class Transformer implements ClassFileTransformer {
                             ProtectionDomain pd, byte[] classfileBuffer) {
         if (className == null) return null;
 
-        Trace.log("[Incendiary] transform called for " + className);
-
+        // Hot path: no logging for non-matching classes.
         if (!HookRegistry.hasHooks(className)) return null;
 
         Trace.log("[Incendiary] transforming " + className);
