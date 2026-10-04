@@ -11,7 +11,12 @@ public final class Transformer implements ClassFileTransformer {
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
                             ProtectionDomain pd, byte[] classfileBuffer) {
         if (className == null) return null;
+
+        Trace.log("[Incendiary] transform called for " + className);
+
         if (!HookRegistry.hasHooks(className)) return null;
+
+        Trace.log("[Incendiary] transforming " + className);
 
         try {
             ClassReader cr = new ClassReader(classfileBuffer);
@@ -19,18 +24,18 @@ public final class Transformer implements ClassFileTransformer {
             HookInjector injector = new HookInjector(cw);
             cr.accept(injector, ClassReader.EXPAND_FRAMES);
 
-            if (injector.getInjectedCount() == 0) {
-                // Nothing actually matched; let the original bytes through.
-                return null;
-            }
+            Trace.log("[Incendiary] " + className
+                + " injected " + injector.getInjectedCount());
 
-            System.out.println("[Incendiary] transformed " + className
-                + " (" + injector.getInjectedCount() + " hook(s))");
+            if (injector.getInjectedCount() == 0) return null;
             return cw.toByteArray();
         } catch (Throwable t) {
-            System.err.println("[Incendiary] failed to transform " + className);
-            t.printStackTrace();
-            return null; // fall back to original
+            Trace.log("[Incendiary] EXCEPTION transforming " + className);
+            Trace.log(t.toString());
+            for (StackTraceElement e : t.getStackTrace()) {
+                Trace.log("  at " + e);
+            }
+            return null;
         }
     }
 }
