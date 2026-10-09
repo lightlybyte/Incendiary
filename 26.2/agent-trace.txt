@@ -1,7 +1,7 @@
 [Incendiary] premain entered
-[Incendiary] side: SERVER
+[Incendiary] side: CLIENT
 [Incendiary] DFU no-op hook skipped: no ()V target on 26.2
-[Incendiary] registry size: 0
-[Incendiary] hasHooks(Minecraft): false
+[Incendiary] registry size: 2
+[Incendiary] hasHooks(Minecraft): true
 [Incendiary] discovered 0 mod(s)
 [Incendiary] transformer installed
